@@ -122,6 +122,9 @@ public static class GuiLayouts
             ImGui.Text(io.MousePos.Y.ToString());
             ImGui.Text(io.KeysDown.ToString());
 
+            //Enable docking flag for windows
+            io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
+
             if (ImGui.ArrowButton("##test", ImGuiDir.Down))
             {
                 ImGui.Text("ArrowButton");
