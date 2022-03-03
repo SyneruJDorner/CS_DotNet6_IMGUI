@@ -2,6 +2,10 @@
 A research  project in .Net 6 using Veldrid, ImGuiNET and VS Code.
 <br/>
 
+**Editing UI Layouts:**<br/>
+To edit the GUI layouts currently I am working inside the "GuiLayouts.cs" located under "./src/UI/GuiLayouts.cs".
+<br/>
+
 **Currently learned how to:**<br/>
 - Render UI.
 - Utalize a debug window if arg "--debug" is provided.
