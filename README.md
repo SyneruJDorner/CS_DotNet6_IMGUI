@@ -1,7 +1,7 @@
 # CS_DotNet6_IMGUI
 A research  project in .Net 6 using Veldrid, ImGuiNET and VS Code.
 
-Currently able to:
+**Currently learned how to:**<br/>
 - Render UI.
 - Utalize a debug window if arg "--debug" is provided.
 - Detect inputs, in this case if tab is pressed, down or released.
