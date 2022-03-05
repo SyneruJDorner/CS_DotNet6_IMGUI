@@ -287,6 +287,10 @@ public class ImGuiHelper : IDisposable
         {
             _frameBegun = false;
             ImGui.Render();
+
+            ImGui.UpdatePlatformWindows(); 
+            ImGui.RenderPlatformWindowsDefault(); 
+
             RenderImDrawData(ImGui.GetDrawData(), gd, cl);
         }
     }
