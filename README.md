@@ -14,4 +14,4 @@ To edit the GUI layouts currently I am working inside the "GuiLayouts.cs" locate
 - Create new windows with content in it.
 <br/>
 
-![Prefab](https://raw.githubusercontent.com/justindd1994/CS_DotNet6_IMGUI/a5a5dcdfbc3c06e1dcce25c798221e1a8c1c6a26/img_ref/Screenshot_1.png)<br/>
+![Prefab](https://github.com/justindd1994/CS_DotNet6_IMGUI/blob/master/img_ref/Screenshot_1.png)<br/>
