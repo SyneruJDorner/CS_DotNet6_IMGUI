@@ -8,288 +8,304 @@ using ImGuiNET;
 
 public static class GuiLayouts
 {
-    private static bool _showAnotherWindow = false;
-    private static uint s_tab_bar_flags = (uint)ImGuiTabBarFlags.Reorderable;
-    static bool[] s_opened = { true, true, true, true }; // Persistent user state
-
-    private static void SetGlobalStyling()
-    {
-        ImGuiStylePtr style = ImGui.GetStyle();
-
-        style.WindowBorderSize = 0;
-        style.WindowTitleAlign = new Vector2(0.5f, 0.5f);
-        style.WindowMinSize = new Vector2(900.0f, 430.0f);
-        style.WindowRounding = 0.0f;
-
-        style.FramePadding = new Vector2(8.0f, 6.0f);
-
-        style.Colors[(int)ImGuiCol.TitleBg] = new Vector4(255.0f / 255, 101.0f / 255, 53.0f / 255, 255.0f / 255);
-        style.Colors[(int)ImGuiCol.TitleBgActive] = new Vector4(255.0f / 255, 101.0f / 255, 53.0f / 255, 255.0f / 255);
-        style.Colors[(int)ImGuiCol.TitleBgCollapsed] = new Vector4(0.0f / 255, 0.0f / 255, 0.0f / 255, 130.0f / 255);
-
-        style.Colors[(int)ImGuiCol.Button] = new Vector4(31.0f / 255, 30.0f / 255, 31.0f / 255, 255.0f / 255);
-        style.Colors[(int)ImGuiCol.ButtonActive] = new Vector4(31.0f / 255, 30.0f / 255, 31.0f / 255, 255.0f / 255);
-        style.Colors[(int)ImGuiCol.ButtonHovered] = new Vector4(41.0f / 255, 40.0f / 255, 41.0f / 255, 255.0f / 255);
-
-        style.Colors[(int)ImGuiCol.Separator] = new Vector4(70.0f / 255, 70.0f / 255, 70.0f / 255, 255.0f / 255);
-        style.Colors[(int)ImGuiCol.SeparatorActive] = new Vector4(76.0f / 255, 76.0f / 255, 76.0f / 255, 255.0f / 255);
-        style.Colors[(int)ImGuiCol.SeparatorHovered] = new Vector4(76.0f / 255, 76.0f / 255, 76.0f / 255, 255.0f / 255);
-
-        style.Colors[(int)ImGuiCol.FrameBg] = new Vector4(37.0f / 255, 36.0f / 255, 37.0f / 255, 255.0f / 255);
-        style.Colors[(int)ImGuiCol.FrameBgActive] = new Vector4(37.0f / 255, 36.0f / 255, 37.0f / 255, 255.0f / 255);
-        style.Colors[(int)ImGuiCol.FrameBgHovered] = new Vector4(37.0f / 255, 36.0f / 255, 37.0f / 255, 255.0f / 255);
-
-        style.Colors[(int)ImGuiCol.Header] = new Vector4(0.0f / 255, 0.0f / 255, 0.0f / 255, 0.0f / 255);
-        style.Colors[(int)ImGuiCol.HeaderActive] = new Vector4(0.0f / 255, 0.0f / 255, 0.0f / 255, 0.0f / 255);
-        style.Colors[(int)ImGuiCol.HeaderHovered] = new Vector4(46.0f / 255, 46.0f / 255, 46.0f / 255, 255.0f / 255);
-
-        style.Colors[(int)ImGuiCol.WindowBg].W = 1.0f;
-    }
-
+    //private static bool _showAnotherWindow = false;
+    //private static uint s_tab_bar_flags = (uint)ImGuiTabBarFlags.Reorderable;
+    //static bool[] s_opened = { true, true, true, true }; // Persistent user state
     public static void Render()
     {
-        SetGlobalStyling();
+        ImGui.Begin("Main Menu Window", ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.MenuBar | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.AlwaysUseWindowPadding | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoBringToFrontOnFocus);
+        ImGui.SetWindowPos(new Vector2(0, 0));
+        ImGui.SetWindowSize(new Vector2(GuiController._window!.Width, GuiController._window!.Height));
+        CreateMainMenu();
+        ImGui.End();
 
-        ImGuiIOPtr io = ImGui.GetIO();
-        io.BackendFlags |= ImGuiBackendFlags.PlatformHasViewports;
+        ImGui.Begin("Main Docking Zone", ImGuiWindowFlags.DockNodeHost | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoDecoration);
+        ImGui.SetWindowPos(new Vector2(0.0f, 25.0f));
+        ImGui.SetWindowSize(new Vector2(GuiController._window!.Width, GuiController._window!.Height));
+        uint dockspaceID = ImGui.DockSpace(ImGui.GetID("MainMenu_DockSpace"), new Vector2(0.0f, 0.0f), ImGuiDockNodeFlags.None | ImGuiDockNodeFlags.PassthruCentralNode);
+        ImGui.SetNextWindowDockID(dockspaceID, ImGuiCond.Once);
+        ImGui.End();
 
-        io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
-        io.ConfigFlags |= ImGuiConfigFlags.ViewportsEnable;
-        io.ConfigWindowsMoveFromTitleBarOnly = true;
+        //ImGuiDockNodeFlags.NoResize;
 
+        ImGui.Begin("Game", ImGui.IsWindowDocked() == true ? ImGuiWindowFlags.NoBringToFrontOnFocus : ImGuiWindowFlags.None);
+        ImGui.PushID("Game");
+        ImGui.Text("This is the Game Window.");
+        ImGui.SetNextWindowDockID(dockspaceID, ImGuiCond.Once);
+        ImGui.End();
 
-        
-        //ImGui.SetNextWindowSizeConstraints(new Vector2(1280, 720), new Vector2(2560, 1440));
+        ImGui.Begin("Project", ImGui.IsWindowDocked() == true ? ImGuiWindowFlags.NoBringToFrontOnFocus : ImGuiWindowFlags.None);
+        ImGui.PushID("Project");
+        ImGui.Text("This is the Project Window.");
+        ImGui.SetNextWindowDockID(dockspaceID, ImGuiCond.Once);
+        ImGui.End();
 
-        if (ImGui.Begin("Main Window", ImGuiWindowFlags.MenuBar | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove))
-        {
-            
-            // if (ImGui.IsMouseDragging(ImGuiMouseButton.Left) && moveDeltaOffscreen != Vector2.Zero)
-            // {
-            //     //io.MouseDelta
-            //     //ImGui.CaptureMouseFromApp(true);
-            //     //ImGui.ResetMouseDragDelta();
-                
-            //     Vector2 moveDelta = ImGui.GetMouseDragDelta(ImGuiMouseButton.Left);
+        ImGui.Begin("Inspector", ImGui.IsWindowDocked() == true ? ImGuiWindowFlags.NoBringToFrontOnFocus : ImGuiWindowFlags.None);
+        ImGui.PushID("Inspector");
+        ImGui.Text("This is the Inspector Window.");
+        ImGui.SetNextWindowDockID(dockspaceID, ImGuiCond.Once);
+        ImGui.End();
 
-            //     GuiController._window!.X += (int)moveDelta.X;
-            //     GuiController._window!.Y += (int)moveDelta.Y;
-            //     Console.WriteLine("Dragging detected!: " + moveDelta);
-            // }
+        ImGui.Begin("Scene", ImGui.IsWindowDocked() == true ? ImGuiWindowFlags.NoBringToFrontOnFocus : ImGuiWindowFlags.None);
+        ImGui.PushID("Scene");
+        ImGui.Text("This is the Scene Window.");
+        ImGui.SetNextWindowDockID(dockspaceID, ImGuiCond.Once);
+        ImGui.End();
 
-            //ImGui
-            //GuiController._window!.Moved
-            //GuiController._window!.X = (int)(ImGui.GetWindowPos().X);
-            //GuiController._window!.Y = (int)(ImGui.GetWindowPos().Y);
-            // ImGui.SetWindowPos(new Vector2(0, 0));
-            //GuiController._window!.Width = (int)(windowPosX + ImGui.GetWindowSize().X + 1);
-            //GuiController._window!.Height = (int)(windowPosY + ImGui.GetWindowSize().Y + 1);
-            //GuiController._window!.
+        ImGui.Begin("Hierarchy", ImGui.IsWindowDocked() == true ? ImGuiWindowFlags.NoBringToFrontOnFocus : ImGuiWindowFlags.None);
+        ImGui.PushID("Hierarchy");
+        ImGui.Text("This is the Hierarchy Window.");
+        ImGui.SetNextWindowDockID(dockspaceID, ImGuiCond.Once);
+        ImGui.End();
 
-            //CreateMainMenu();
+        ImGui.Begin("Console", ImGui.IsWindowDocked() == true ? ImGuiWindowFlags.NoBringToFrontOnFocus : ImGuiWindowFlags.None);
+        ImGui.PushID("Console");
+        ImGui.Text("This is the Console Window.");
+        ImGui.SetNextWindowDockID(dockspaceID, ImGuiCond.Once);
+        ImGui.End();
 
-            ImGui.Text("Window Position X: " + ImGui.GetWindowPos().X.ToString());
-            ImGui.Text("Window Position Y: " + ImGui.GetWindowPos().Y.ToString());
-            ImGui.Text("Window Width: " + ImGui.GetWindowSize().X.ToString());
-            ImGui.Text("Window Height: " + ImGui.GetWindowSize().Y.ToString());
-            ImGui.Text("Mouse X: " + ImGui.GetMousePos().X.ToString());
-            ImGui.Text("Mouse Y: " + ImGui.GetMousePos().Y.ToString());
+        // if (GuiController._debug == true)
+        // {
+        //     ImGui.Text("Hello, world!");
+        //     ImGui.Text($"Mouse position: {ImGui.GetMousePos()}");
+        //     if (ImGui.Button("Button"))
+        //     {
+        //         ImGui.Text("Button clicked");
+        //     }
 
-            //ImGui.Text("Mouse POS Extern: " + GetCursorPosition());
-            //ImGui.Text("Mouse DELTA Extern: <" + (moveDeltaOffscreen.X) + ", " + (moveDeltaOffscreen.Y) + ">");
-            //ImGui.Text("Mouse Relative Pos: " + relativeDragPosition);
-            //ImGui.Text("Window Pos: <" + GuiController._window!.X + ", " + GuiController._window!.Y + ">");
-            ImGui.Text("Test");
-            ImGui.End();
+        //     float framerate = ImGui.GetIO().Framerate;
+        //     ImGui.Text($"Application average {1000.0f / framerate:0.##} ms/frame ({framerate:0.#} FPS)");
+        //     ImGui.Checkbox("Another Window", ref _showAnotherWindow);
+        //     //ImGui.PopStyleVar();
 
-            //Console.WriteLine("Mouse POS Extern: " + GetCursorPosition());
-            //Console.WriteLine("Mouse Relative Pos: " + relativeDragPosition);
-        }
+        //     // 2. Show another simple window. In most cases you will use an explicit Begin/End pair to name your windows.
+        //     if (_showAnotherWindow)
+        //     {
+        //         ImGui.Begin("Another Window", ref _showAnotherWindow, ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize);
+        //         ImGui.Text("Hello from another window!");
+        //         if (ImGui.Button("Close Me"))
+        //             _showAnotherWindow = false;
+        //         ImGui.End();
+        //     }
 
-        //ImGui.GetWindowPos().x;
-        //ImGui.GetWindowSize();
-        
-        //ImGui.SetNextWindowViewport(0);
+        //     if (ImGui.TreeNode("Tabs"))
+        //     {
+        //         if (ImGui.TreeNode("Basic"))
+        //         {
+        //             ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags.None;
+        //             if (ImGui.BeginTabBar("MyTabBar", tab_bar_flags))
+        //             {
+        //                 if (ImGui.BeginTabItem("Avocado"))
+        //                 {
+        //                     ImGui.Text("This is the Avocado tab!\nblah blah blah blah blah");
+        //                     ImGui.EndTabItem();
+        //                 }
+        //                 if (ImGui.BeginTabItem("Broccoli"))
+        //                 {
+        //                     ImGui.Text("This is the Broccoli tab!\nblah blah blah blah blah");
+        //                     ImGui.EndTabItem();
+        //                 }
+        //                 if (ImGui.BeginTabItem("Cucumber"))
+        //                 {
+        //                     ImGui.Text("This is the Cucumber tab!\nblah blah blah blah blah");
+        //                     ImGui.EndTabItem();
+        //                 }
+        //                 ImGui.EndTabBar();
+        //             }
+        //             ImGui.Separator();
+        //             ImGui.TreePop();
+        //         }
+
+        //         if (ImGui.TreeNode("Advanced & Close Button"))
+        //         {
+        //             // Expose a couple of the available flags. In most cases you may just call BeginTabBar() with no flags (0).
+        //             ImGui.CheckboxFlags("ImGuiTabBarFlags_Reorderable", ref s_tab_bar_flags, (uint)ImGuiTabBarFlags.Reorderable);
+        //             ImGui.CheckboxFlags("ImGuiTabBarFlags_AutoSelectNewTabs", ref s_tab_bar_flags, (uint)ImGuiTabBarFlags.AutoSelectNewTabs);
+        //             ImGui.CheckboxFlags("ImGuiTabBarFlags_NoCloseWithMiddleMouseButton", ref s_tab_bar_flags, (uint)ImGuiTabBarFlags.NoCloseWithMiddleMouseButton);
+        //             if ((s_tab_bar_flags & (uint)ImGuiTabBarFlags.FittingPolicyMask) == 0)
+        //                 s_tab_bar_flags |= (uint)ImGuiTabBarFlags.FittingPolicyDefault;
+        //             if (ImGui.CheckboxFlags("ImGuiTabBarFlags_FittingPolicyResizeDown", ref s_tab_bar_flags, (uint)ImGuiTabBarFlags.FittingPolicyResizeDown))
+        //         s_tab_bar_flags &= ~((uint)ImGuiTabBarFlags.FittingPolicyMask ^ (uint)ImGuiTabBarFlags.FittingPolicyResizeDown);
+        //             if (ImGui.CheckboxFlags("ImGuiTabBarFlags_FittingPolicyScroll", ref s_tab_bar_flags, (uint)ImGuiTabBarFlags.FittingPolicyScroll))
+        //         s_tab_bar_flags &= ~((uint)ImGuiTabBarFlags.FittingPolicyMask ^ (uint)ImGuiTabBarFlags.FittingPolicyScroll);
+
+        //             // Tab Bar
+        //             string[] names = { "Artichoke", "Beetroot", "Celery", "Daikon" };
+
+        //             for (int n = 0; n < s_opened.Length; n++)
+        //             {
+        //                 if (n > 0) { ImGui.SameLine(); }
+        //                 ImGui.Checkbox(names[n], ref s_opened[n]);
+        //             }
+
+        //             // Passing a bool* to BeginTabItem() is similar to passing one to Begin(): the underlying bool will be set to false when the tab is closed.
+        //             if (ImGui.BeginTabBar("MyTabBar", (ImGuiTabBarFlags)s_tab_bar_flags))
+        //             {
+        //                 for (int n = 0; n < s_opened.Length; n++)
+        //                     if (s_opened[n] && ImGui.BeginTabItem(names[n], ref s_opened[n]))
+        //                     {
+        //                         ImGui.Text($"This is the {names[n]} tab!");
+        //                         if ((n & 1) != 0)
+        //                             ImGui.Text("I am an odd tab.");
+        //                         ImGui.EndTabItem();
+        //                     }
+        //                 ImGui.EndTabBar();
+        //             }
+        //             ImGui.Separator();
+        //             ImGui.TreePop();
+        //         }
+        //         ImGui.TreePop();
+        //     }
+
+        //     ImGui.Text("\n" + "Frame time = " + GuiController.io.DeltaTime.ToString());
+        //     ImGui.Text(ImGui.GetKeyIndex(ImGuiKey.Tab).ToString());
+        //     ImGui.Text(GuiController.io.MousePos.X.ToString());
+        //     ImGui.Text(GuiController.io.MousePos.Y.ToString());
+        //     ImGui.Text(GuiController.io.KeysDown.ToString());
+
+        //     if (ImGui.ArrowButton("##test", ImGuiDir.Down))
+        //     {
+        //         ImGui.Text("ArrowButton");
+        //     }
+
+        //     if (ImGui.IsKeyDown(ImGuiKey.Tab))
+        //     {
+        //         ImGui.Text("Tab is down");
+        //     }
+
+        //     if (ImGui.IsMouseDown(0))
+        //     {
+        //         ImGui.Text("Mouse 0 is down");
+        //     }
+
+        //     if (ImGui.IsKeyPressed(ImGuiKey.Tab))
+        //     {
+        //         ImGui.Text("Tab is pressed");
+        //     }
+
+        //     if (ImGui.IsKeyReleased(ImGuiKey.Tab))
+        //     {
+        //         ImGui.Text("Tab is released");
+        //     }
         // }
-        // ImGui.End();
-
-
-        if (GuiController._debug == true)
-        {
-            //ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.2f);
-
-            ImGui.Text("Hello, world!");
-            ImGui.Text($"Mouse position: {ImGui.GetMousePos()}");
-            if (ImGui.Button("Button"))
-            {
-                ImGui.Text("Button clicked");
-            }
-
-            float framerate = ImGui.GetIO().Framerate;
-            ImGui.Text($"Application average {1000.0f / framerate:0.##} ms/frame ({framerate:0.#} FPS)");
-            ImGui.Checkbox("Another Window", ref _showAnotherWindow);
-            //ImGui.PopStyleVar();
-
-            // 2. Show another simple window. In most cases you will use an explicit Begin/End pair to name your windows.
-            if (_showAnotherWindow)
-            {
-                ImGui.Begin("Another Window", ref _showAnotherWindow, ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize);
-                ImGui.Text("Hello from another window!");
-                if (ImGui.Button("Close Me"))
-                    _showAnotherWindow = false;
-                ImGui.End();
-            }
-
-            if (ImGui.TreeNode("Tabs"))
-            {
-                if (ImGui.TreeNode("Basic"))
-                {
-                    ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags.None;
-                    if (ImGui.BeginTabBar("MyTabBar", tab_bar_flags))
-                    {
-                        if (ImGui.BeginTabItem("Avocado"))
-                        {
-                            ImGui.Text("This is the Avocado tab!\nblah blah blah blah blah");
-                            ImGui.EndTabItem();
-                        }
-                        if (ImGui.BeginTabItem("Broccoli"))
-                        {
-                            ImGui.Text("This is the Broccoli tab!\nblah blah blah blah blah");
-                            ImGui.EndTabItem();
-                        }
-                        if (ImGui.BeginTabItem("Cucumber"))
-                        {
-                            ImGui.Text("This is the Cucumber tab!\nblah blah blah blah blah");
-                            ImGui.EndTabItem();
-                        }
-                        ImGui.EndTabBar();
-                    }
-                    ImGui.Separator();
-                    ImGui.TreePop();
-                }
-
-                if (ImGui.TreeNode("Advanced & Close Button"))
-                {
-                    // Expose a couple of the available flags. In most cases you may just call BeginTabBar() with no flags (0).
-                    ImGui.CheckboxFlags("ImGuiTabBarFlags_Reorderable", ref s_tab_bar_flags, (uint)ImGuiTabBarFlags.Reorderable);
-                    ImGui.CheckboxFlags("ImGuiTabBarFlags_AutoSelectNewTabs", ref s_tab_bar_flags, (uint)ImGuiTabBarFlags.AutoSelectNewTabs);
-                    ImGui.CheckboxFlags("ImGuiTabBarFlags_NoCloseWithMiddleMouseButton", ref s_tab_bar_flags, (uint)ImGuiTabBarFlags.NoCloseWithMiddleMouseButton);
-                    if ((s_tab_bar_flags & (uint)ImGuiTabBarFlags.FittingPolicyMask) == 0)
-                        s_tab_bar_flags |= (uint)ImGuiTabBarFlags.FittingPolicyDefault;
-                    if (ImGui.CheckboxFlags("ImGuiTabBarFlags_FittingPolicyResizeDown", ref s_tab_bar_flags, (uint)ImGuiTabBarFlags.FittingPolicyResizeDown))
-                s_tab_bar_flags &= ~((uint)ImGuiTabBarFlags.FittingPolicyMask ^ (uint)ImGuiTabBarFlags.FittingPolicyResizeDown);
-                    if (ImGui.CheckboxFlags("ImGuiTabBarFlags_FittingPolicyScroll", ref s_tab_bar_flags, (uint)ImGuiTabBarFlags.FittingPolicyScroll))
-                s_tab_bar_flags &= ~((uint)ImGuiTabBarFlags.FittingPolicyMask ^ (uint)ImGuiTabBarFlags.FittingPolicyScroll);
-
-                    // Tab Bar
-                    string[] names = { "Artichoke", "Beetroot", "Celery", "Daikon" };
-
-                    for (int n = 0; n < s_opened.Length; n++)
-                    {
-                        if (n > 0) { ImGui.SameLine(); }
-                        ImGui.Checkbox(names[n], ref s_opened[n]);
-                    }
-
-                    // Passing a bool* to BeginTabItem() is similar to passing one to Begin(): the underlying bool will be set to false when the tab is closed.
-                    if (ImGui.BeginTabBar("MyTabBar", (ImGuiTabBarFlags)s_tab_bar_flags))
-                    {
-                        for (int n = 0; n < s_opened.Length; n++)
-                            if (s_opened[n] && ImGui.BeginTabItem(names[n], ref s_opened[n]))
-                            {
-                                ImGui.Text($"This is the {names[n]} tab!");
-                                if ((n & 1) != 0)
-                                    ImGui.Text("I am an odd tab.");
-                                ImGui.EndTabItem();
-                            }
-                        ImGui.EndTabBar();
-                    }
-                    ImGui.Separator();
-                    ImGui.TreePop();
-                }
-                ImGui.TreePop();
-            }
-
-            ImGui.Text("\n" + "Frame time = " + io.DeltaTime.ToString());
-            ImGui.Text(ImGui.GetKeyIndex(ImGuiKey.Tab).ToString());
-            ImGui.Text(io.MousePos.X.ToString());
-            ImGui.Text(io.MousePos.Y.ToString());
-            ImGui.Text(io.KeysDown.ToString());
-
-            //Enable docking flag for windows
-            //io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
-
-            if (ImGui.ArrowButton("##test", ImGuiDir.Down))
-            {
-                ImGui.Text("ArrowButton");
-            }
-
-            if (ImGui.IsKeyDown(ImGuiKey.Tab))
-            {
-                ImGui.Text("Tab is down");
-            }
-
-            if (ImGui.IsMouseDown(0))
-            {
-                ImGui.Text("Mouse 0 is down");
-            }
-
-            if (ImGui.IsKeyPressed(ImGuiKey.Tab))
-            {
-                ImGui.Text("Tab is pressed");
-            }
-
-            if (ImGui.IsKeyReleased(ImGuiKey.Tab))
-            {
-                ImGui.Text("Tab is released");
-            }
-            // foreach (var activeText in _activeTexts)
-            // {
-                // ImGui.SetNextWindowSize(new Vector2(100, 100));
-                // ImGui.SetNextWindowPos(new Vector2(100, 100));
-                // ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.2f);
-                // var name = "Test";//activeText.GetHashCode().ToString();
-                // ImGui.Begin(name, ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoMove);
-                // ImGui.PopStyleVar();
-            
-                // ImGui.   (ImGuiStyleVar.Alpha, 1.0f);
-                // ImGui.BeginChild(name + "text");
-                // ImGui.Text(name);
-                // ImGui.EndChild();
-                // ImGui.PopStyleVar();
-            
-                // ImGui.End();
-            // }
-
-        }
     }
 
     public static void CreateMainMenu()
     {
         var menu = new Dictionary<string, Dictionary<string[], Action[]>>();
-        var submenu = new Dictionary<string[], Action[]>();
+        var submenu_file = new Dictionary<string[], Action[]>();
 
         //Create menus here and actions per menu item
-        submenu.Add(new string[]
+        submenu_file.Add(new string[]
         {
-            "New",
-            "Options",
-            "Quit"
+            "New Scene",
+            "Open Scene",
+            "Save",
+            "Save As",
+            "New Project",
+            "Open Project",
+            "Save Project",
+            "Build Settings",
+            "Build and Run",
+            "Exit"
         },
         new Action[]
         {
             () => {
-                Console.WriteLine("New Menu Clicked");
+                Console.WriteLine("'New Scene' Clicked");
             },
             () => {
-                Console.WriteLine("Option Menu Clicked");
+                Console.WriteLine("'Open Scene' Clicked");
+            },
+            () => {
+                Console.WriteLine("'Save' Clicked");
+            },
+            () => {
+                Console.WriteLine("'Save As' Clicked");
+            },
+            () => {
+                Console.WriteLine("'New Project' Clicked");
+            },
+            () => {
+                Console.WriteLine("'Open Project' Clicked");
+            },
+            () => {
+                Console.WriteLine("'Save Project' Clicked");
+            },
+            () => {
+                Console.WriteLine("'Build Settings' Clicked");
+            },
+            () => {
+                Console.WriteLine("'Build and Run' Clicked");
             },
             () => {
                 GuiController._window?.Close();
             }
         });
 
-        menu.Add("File", submenu);
+        menu.Add("File", submenu_file);
 
+        var submenu_edit = new Dictionary<string[], Action[]>();
+        submenu_edit.Add(new string[]
+        {
+            "Undo",
+            "Redo",
+            "Cut",
+            "Copy",
+            "Paste",
+            "Rename",
+            "Duplicate",
+            "Delete",
+            "Play",
+            "Pause",
+            "Stop",
+            "Project Settings",
+            "Preferences"
+        },
+        new Action[]
+        {
+            () => {
+                Console.WriteLine("'Undo' Clicked");
+            },
+            () => {
+                Console.WriteLine("'Redo' Clicked");
+            },
+            () => {
+                Console.WriteLine("'Cut' Clicked");
+            },
+            () => {
+                Console.WriteLine("'Copy' Clicked");
+            },
+            () => {
+                Console.WriteLine("'Paste' Clicked");
+            },
+            () => {
+                Console.WriteLine("'Rename' Clicked");
+            },
+            () => {
+                Console.WriteLine("'Duplicate' Clicked");
+            },
+            () => {
+                Console.WriteLine("'Delete' Clicked");
+            },
+            () => {
+                Console.WriteLine("'Play' Clicked");
+            },
+            () => {
+                Console.WriteLine("'Pause' Clicked");
+            },
+            () => {
+                Console.WriteLine("'Stop' Clicked");
+            },
+            () => {
+                Console.WriteLine("'Project Settings' Clicked");
+            },
+            () => {
+                Console.WriteLine("'Preferences' Clicked");
+            }
+        });
+
+        menu.Add("Edit", submenu_edit);
         MainMenuConstructor(menu);
     }
 
@@ -325,96 +341,3 @@ public static class GuiLayouts
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-REVIEW THIS INFO IN C++ and port some to C#
-
-
-
-static int initialized = 0;
-		static int new_window = 0;
-		ImGuiWindowFlags flags = ImGuiWindowFlags_MenuBar;
-		flags |= ImGuiWindowFlags_NoDocking;
-		ImGuiViewport* viewport = ImGui::GetMainViewport();
-		ImGui::SetNextWindowPos(viewport->Pos);
-		ImGui::SetNextWindowSize(viewport->Size);
-		ImGui::SetNextWindowViewport(viewport->ID);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-		flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-		flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		ImGui::Begin("DockSpace Demo", 0, flags);
-		ImGui::PopStyleVar();
-
-		if (ImGui::BeginMenuBar())
-		{
-			if (initialized == 0)
-			{
-				if (ImGui::Button("1. Initialize"))
-					initialized = 1;
-			}
-			if (initialized > 0 && new_window == 0)
-			{
-				if (ImGui::Button("2. New Window"))
-					new_window = 1;
-			}
-			ImGui::EndMenuBar();
-		}
-
-		ImGuiIO& io = ImGui::GetIO();
-		ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
-
-		if (initialized == 1)
-		{
-			initialized = 2;
-			ImGuiContext* ctx = ImGui::GetCurrentContext();
-			ImGui::DockBuilderRemoveNode(ctx, dockspace_id); // Clear out existing layout
-			ImGui::DockBuilderAddNode(ctx, dockspace_id, ImGui::GetMainViewport()->Size); // Add empty node
-
-			ImGuiID dock_main_id = dockspace_id; // This variable will track the document node, however we are not using it here as we aren't docking anything into it.
-			ImGuiID dock_id_prop = ImGui::DockBuilderSplitNode(ctx, dock_main_id, ImGuiDir_Left, 0.20f, NULL, &dock_main_id);
-			ImGuiID dock_id_bottom = ImGui::DockBuilderSplitNode(ctx, dock_main_id, ImGuiDir_Down, 0.20f, NULL, &dock_main_id);
-
-			ImGui::DockBuilderDockWindow(ctx, "Log", dock_id_bottom);
-			ImGui::DockBuilderDockWindow(ctx, "Properties", dock_id_prop);
-			ImGui::DockBuilderFinish(ctx, dockspace_id);
-		}
-
-		ImGui::DockSpace(dockspace_id);
-		if (initialized == 2)
-		{
-			ImGui::Begin("Properties");
-			ImGui::End();
-
-			ImGui::Begin("Log");
-			ImGui::End();
-		}
-
-		if (new_window == 1)
-		{
-			// Should dock window to empty space, instead window is not docked anywhere.
-			ImGui::SetNextWindowDockId(dockspace_id, ImGuiCond_Once);
-			ImGui::Begin("New Window");
-			ImGui::End();
-		}
-
-		ImGui::End();
-		ImGui::PopStyleVar();
-*/
